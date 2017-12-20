@@ -2,6 +2,7 @@
 """IP Subnet Calculator."""
 
 from __future__ import print_function
+import logging
 import json
 import netaddr
 from netaddr import IPAddress, IPNetwork
@@ -9,7 +10,11 @@ from netaddr import IPAddress, IPNetwork
 
 def handler(event, context):
     """Lambda handler."""
-    # pylint: disable=unused-argument, invalid-name
+    # pylint: disable=unused-argument, too-many-locals
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    logging.info(event)
 
     output = {'statusCode': 200,
               'body': '',
@@ -19,25 +24,32 @@ def handler(event, context):
 
     try:
         ipaddy = event['query']
+        logging.info(ipaddy)
         assert ipaddy != ''
-    except KeyError:
+    except KeyError as ex:
+        logging.error(ex)
         web = open('ipcalc.html', 'r')
         output['body'] = web.read()
         output['headers']['Content-Type'] = 'text/html'
+        logging.info('returning html')
         return output
-    except AssertionError:
+    except AssertionError as ex:
+        logging.error(ex)
         web = open('ipcalc.html', 'r')
         output['body'] = web.read()
         output['headers']['Content-Type'] = 'text/html'
+        logging.info('returning html')
         return output
 
     if ' ' in ipaddy:
+        logging.info('assume netmask')
         ip_parts = ipaddy.split(' ')
         pos1 = IPAddress(ip_parts[0])
         pos2 = IPAddress(ip_parts[1])
         if pos2.is_netmask():
             ipaddy = '%s/%s' % (pos1, pos2.netmask_bits())
     elif '/' not in ipaddy:
+        logging.info('assume /32')
         ipaddy = '%s/32' % ipaddy
 
     try:
@@ -59,8 +71,10 @@ def handler(event, context):
                    'hostmax': str(ip.cidr[ip_hosts]),
                    'broadcast': str(ip.broadcast),
                    'hosts/net': str(hosts)}
+        logging.info(results)
     except netaddr.AddrFormatError as errstr:
         results = {'error': '%s' % errstr}
+        logging.error(results)
 
     output['body'] = json.dumps(results)
     return json.dumps(results)
