@@ -11,15 +11,25 @@ def handler(event, context):
     """Lambda handler."""
     # pylint: disable=unused-argument, invalid-name
 
+    output = {'statusCode': 200,
+              'body': '',
+              'headers': {'Content-Type': 'application/json',
+                          'Access-Control-Allow-Origin': '*',
+                          'Access-Control-Allow-Methods': 'GET'}}
+
     try:
         ipaddy = event['query']
         assert ipaddy != ''
     except KeyError:
         web = open('ipcalc.html', 'r')
-        return web.read()
+        output['body'] = web.read()
+        output['headers']['Content-Type'] = 'text/html'
+        return output
     except AssertionError:
         web = open('ipcalc.html', 'r')
-        return web.read()
+        output['body'] = web.read()
+        output['headers']['Content-Type'] = 'text/html'
+        return output
 
     if ' ' in ipaddy:
         ip_parts = ipaddy.split(' ')
@@ -52,6 +62,7 @@ def handler(event, context):
     except netaddr.AddrFormatError as errstr:
         results = {'error': '%s' % errstr}
 
+    output['body'] = json.dumps(results)
     return json.dumps(results)
 
 
