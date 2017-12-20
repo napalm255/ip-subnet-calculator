@@ -10,7 +10,7 @@ from netaddr import IPAddress, IPNetwork
 
 def handler(event, context):
     """Lambda handler."""
-    # pylint: disable=unused-argument, too-many-locals
+    # pylint: disable=unused-argument, too-many-locals, invalid-name
 
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
@@ -46,6 +46,7 @@ def handler(event, context):
         ipaddy = '%s/32' % ipaddy
 
     try:
+        logging.info('processing ip address')
         ip = IPNetwork(ipaddy)
         ip_hosts = int(ip.size) - 2
         hostmin = ip.cidr[1] if len(ip.cidr) > 1 else ip.cidr[-1]
@@ -70,7 +71,9 @@ def handler(event, context):
         logging.error(results)
 
     output['body'] = json.dumps(results)
-    return json.dumps(results)
+    logging.info(output)
+
+    return output
 
 
 if __name__ == "__main__":
