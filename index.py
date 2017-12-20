@@ -26,14 +26,7 @@ def handler(event, context):
         ipaddy = event['queryStringParameters']['query']
         logging.info(ipaddy)
         assert ipaddy != ''
-    except KeyError as ex:
-        logging.error(ex)
-        web = open('ipcalc.html', 'r')
-        output['body'] = web.read()
-        output['headers']['Content-Type'] = 'text/html'
-        logging.info('returning html')
-        return output
-    except AssertionError as ex:
+    except (KeyError, AssertionError, TypeError) as ex:
         logging.error(ex)
         web = open('ipcalc.html', 'r')
         output['body'] = web.read()
