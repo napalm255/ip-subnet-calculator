@@ -23,7 +23,7 @@ def handler(event, context):
                           'Access-Control-Allow-Methods': 'GET'}}
 
     try:
-        ipaddy = event['query']
+        ipaddy = event['queryStringParameters']['query']
         logging.info(ipaddy)
         assert ipaddy != ''
     except KeyError as ex:
