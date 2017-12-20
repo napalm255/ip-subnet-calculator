@@ -1,0 +1,91 @@
+<html>
+    <head>
+        <title>IP Calculator</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        <script>
+        function lookup() {
+            $.getJSON("https://api.naponline.net/ipcalc", {query: $("#ip").val()}, function(result){
+                var html = "<p />";
+                var netmask = result['netmask'] + " = /" + result['prefixlen'];
+                if (result['private']) { var pp = "private" } else { var pp = "public" }
+                var info = pp + " ipv" + result['version']
+                html = html + "<tr><td class=\"header\">Address</td>   <td class=\"item\">" + result['address'] + "</td></tr>";
+                html = html + "<tr><td class=\"header\">Netmask</td>   <td class=\"item\">" + netmask + "</td></tr>";
+                html = html + "<tr><td class=\"header\">Wildcard</td>  <td class=\"item\">" + result['wildcard'] + "</td></tr>";
+                html = html + "<tr><td class=\"header\">Network</td>   <td class=\"item\">" + result['network'] + "</td></tr>";
+                html = html + "<tr><td class=\"header\">HostMin</td>   <td class=\"item\">" + result['hostmin'] + "</td></tr>";
+                html = html + "<tr><td class=\"header\">HostMax</td>   <td class=\"item\">" + result['hostmax'] + "</td></tr>";
+                html = html + "<tr><td class=\"header\">Broadcast</td> <td class=\"item\">" + result['broadcast'] + "</td></tr>";
+                html = html + "<tr><td class=\"header\">Hosts/Net</td> <td class=\"item\">" + result['hosts/net'] + "</td></tr>";
+                html = html + "<tr><td class=\"header\">Info</td>      <td class=\"item\">" + info + "</td></tr>";
+                $("#results").html(html);
+            });
+        }
+        $(function(){
+            $('#ip').keypress(function(event){
+                var keycode = (event.keyCode ? event.keyCode : event.which);
+                if(keycode == '13'){
+                    lookup()
+                }
+                event.stopPropagation();
+            });
+            $("button").click(function(){
+                lookup()
+            });
+        });
+        </script>
+        <style>
+            body {
+                font-family: 'Courier New', Courier, 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace;
+            }
+            button {
+                background-color: #4CAF50;
+                border: none;
+                color: #fff;
+                padding: 7px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+            }
+            .textbox {
+                background:
+                    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAJGSURBVDjLjdJLSNRBHMDx78yqLZaKS75DPdgDDaFDbdJmde5QlhCJGxgpRJfqEEKnIsJLB7skQYQKZaSmdLaopPCgEvSCShCMzR5a7oq7/3l12RVtjfzBMA/4fWZ+MyOccwBM3g8HEbIdfCEhfAFnLVapOa28Uevpjrqz/WOsERJgsu9Uq5CZQzgqrJfo9BajNd5irEYn4p3OUiFExtCLmw2tawFi4l5zUMjMIau9u7K+qxeoAcoAA0wDb2OPwmfA16LiiaOHLj1edRLpkO3WmIis7+oBDgJbgQ2AH6gC6jY19N62RkcctKeVIJAhp9QgUA3kJXdONZVcq9JxPSgQoXRAyIDRth8oAXQyKdWnoCKrTD9CBv4GMqx1WGNZkeRWJKbG2hiD1Cb9FbTnzWFdY/LCdLKlgNQ84gyNKqHm0gDjqVHnxDHgA/B9RQkpaB6YklkZl62np9KBhOqwjpKFgeY2YAz4BESBWHI8Hhs6PVVSvc3v98ye4fP7T676B845nt040ip98qpWJmI9PWiU6bfWgXGN2YHcKwU7tsuc4kpUPMbU0+f8+vKt+Pitl7PLAMDI9cNBoB0hQwICzjqUp6MZvsy8yvp95BRuQUjJ75mPvH4wYo1NlJ64Mza7DPwrhi8cCOeXl/aUB4P4c/NJxKLMvpngycCrzxVFG2v/CwAMnguF80oLe8p27cQh+fnpPV/fTc95S6piXQDAw7a9YbWkezZXFbAwMx/xPFXb1D3+Y90AQF/L7kAsri9mZ4lrTd0TcYA/Kakr+x2JSPUAAAAASUVORK5CYII=)
+                    #FFF no-repeat 4px 4px;
+                border: 1px solid #999;
+                outline:0;
+                padding-left: 25px;
+                height:25px;
+                width: 275px;
+            }
+            #results {
+                border-collapse: collapse;
+                border-spacing: 10px;
+            }
+            .header {
+                background-color: #4CAF50;
+                color: #fff;
+                font-size: 16px;
+                font-weight: bold;
+                padding: 10px;
+                border-bottom: 1px solid #000;
+            }
+            .item {
+                background-color: #fff;
+                color: #000;
+                font-size: 16px;
+                padding: 10px;
+                border-bottom: 1px solid #000;
+            }
+        </style>
+    </head>
+    <body>
+        <input id="ip" class="textbox" placeholder="192.168.18.69/22" />
+        <button>lookup</button>
+        <div>
+            <table id="results">
+            </table>
+        </div>
+    </body>
+</html>
+
